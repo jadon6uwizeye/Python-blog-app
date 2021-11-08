@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Awesome Blog App</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
+    <meta name="google" content="notranslate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="{% url 'blogApp:article_list' %}">Jadon</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'blogApp:login' %}"> log in </a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'blogApp:logout' %}"> log out </a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'blogApp:article_create' %}"> new post </a></li>
+                        
+                        {% for category in categories %}
+                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'blogApp:category_view' category.id %}"> {{category}} </a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <header class="masthead" style="background: url('{% static 'img/header-bg.jpg' %}')">
+        
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class=" col-md-8 col-md-10 mx-auto">
+                <div class="site-heading">
+                    <h3 class=" site-heading my-4 mt-3 text-white">  my awesome Blog </h3>
+                    <p class="text-light">I Love Django <i>I am really falling in love with django</i>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="container">
+    <div class="row">
+    {% block content %}
+    <!-- Content Goes here -->
+    {% endblock content %}
+
+
+
+    {% block sidebar %}
+    <!-- Sidebar Widgets Column -->
+    <div class="col-md-4 float-right top ">
+        <div class="card my-4">
+            <h5 class="card-header">About Us</h5>
+            <div class="card-body">
+                <p class="card-text"> this awesome blog app was made as part of assignment given in back-end django app
+                    from Klab..!</p>
+                <a href="{% url 'blogApp:article_list' %}" class="btn btn-danger">Know more!</a>
+                <br>
+
+            </div>
+        </div>
+        <div class="card my-4">
+            <h5 class="card-header">Categories</h5 <div class="card-body">
+        </div>
+        {% for category in categories %}
+        <a href="{% url 'blogApp:category_view' category.id %}" class="btn btn-info">{{category}} </a>
+        <br>
+        {% endfor %}
+    </div>
+    </div>
+    </div>>
+    </div>
+
+    {% endblock sidebar %}
+    <!-- Footer -->
+    <footer class="py-3 bg-grey">
+        <p class="m-0 text-dark text-center ">Copyright &copy; Jadon</p>
+    </footer>
+</body>
+
+</html>

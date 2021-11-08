@@ -1,0 +1,27 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="col-md-8 float-left text-center">
+  <div class="card mb-4">
+    <div>
+      {% for comment in object|slice:":1" %}
+      <h1>{% block title %} {{ comment.article.title }} {% endblock title %}</h1>
+      <img src="{{comment.article.picture.url}}" alt="picture" width="600" height="400">
+      <h4> {{ comment.article.content }}</h4>
+      {% endfor%}
+    </div>
+    <div>
+      {% for comment in object %}
+      <br />
+      <div class = "list-group-item">
+        <p class=" text-muted">{{ comment.commenter }} | {{ comment.created_on }}</p>
+        <p class="card-text text-center">{{ comment.content | safe }}</p>
+        <a href="{% url 'blogApp:comment_delete' comment.id  %}" class="btn btn-secondary">delete</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock content %}

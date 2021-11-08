@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <!-- Blog Entries Column -->
+        <div class="col-md-8 mt-3 left">
+            {% for post in Article_list %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="card-title">{{ post.title }}</h2>
+                    <p class="card-text text-muted h6">{{ post.author }} | {{ post.created_on}} </p>
+                    <p class="card-text">{{post.content|slice:":200" }}</p>
+                    <a href="{% url 'blogApp:article_details' post.slug  %}" class="btn btn-primary">Read More
+                        &rarr;</a>
+                    <a href="{% url 'blogApp:article_delete' post.slug  %}" class="btn btn-secondary">delete</a>
+                    <a href="{% url 'blogApp:article_update' post.slug  %}" class="btn btn-secondary">update</a>
+
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+        {%endblock%}

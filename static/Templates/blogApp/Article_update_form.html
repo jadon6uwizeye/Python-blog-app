@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<form class = "col-md-8 float-left" method="post" action ="" enctype="multipart/form-data">
+  {% csrf_token %}
+{% for field in form %}
+  <div class="card mb-4">
+    <div>
+      <label for="validationDefault01">{{field.label_tag}}</label>
+      <div class="form-control" id="validationDefault01">
+        {{field}}
+      </div>
+    </div>
+  </div>
+{% endfor%}
+  <button class="btn btn-primary" type="submit">update article</button>
+</form> 
+
+{% endblock %}
+
