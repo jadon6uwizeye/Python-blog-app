@@ -145,15 +145,21 @@ class ArticleUpdateView(UpdateView):
     fields = ['title','category','content','picture']
     template_name_suffix = '_update_form'
     
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        
+        """ Making sure that only authors can update articles """
+       
+        obj = self.get_object()
+        if obj.author != self.request.user:
+            return login_view(request)
+        return super(ArticleUpdateView, self).dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()
         return context
     
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(ArticleUpdateView, self).dispatch(*args, **kwargs)
     
 class ArticleCommentView(CreateView):
     model = Comment
