@@ -10,10 +10,8 @@ from django.utils.decorators import method_decorator
 from django.views import generic
 from django.views.generic.edit import CreateView,UpdateView,DeleteView, ModelFormMixin
 from .models import Article,Comment,Category
-# -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
+
+
 
 # Create your views here.
 from django.shortcuts import render, redirect
@@ -34,7 +32,7 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect("/blog/")
+                return redirect("/")
             else:
                 msg = 'Invalid credentials'
         else:
@@ -55,7 +53,7 @@ def register_user(request):
             raw_password = form.cleaned_data.get("password1")
             user = authenticate(username=username, password=raw_password)
 
-            msg = 'User created - please <a href="/blog/login">login</a>.'
+            msg = 'User created - please <a href="/login">login</a>.'
             success = True
 
             # return redirect("/login/")
@@ -73,6 +71,21 @@ class ArticleList(generic.ListView):
     template_name = 'index.html'
     context_object_name= 'Article_list'
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        return context
+    
+class UnpublishedPosts(generic.ListView):
+    queryset = Article.objects.filter(status=0).order_by('-created_on')
+    template_name = 'index.html'
+    context_object_name= 'Article_list'
+    
+    @method_decorator(login_required)
+    @method_decorator(permission_required('blogApp.update_article'))
+    def dispatch(self, *args, **kwargs):
+        return super(UnpublishedPosts, self).dispatch(*args, **kwargs)
+    
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -87,20 +100,25 @@ class ArticleDetail(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()
-        slugIdentifier = self.kwargs['slug'] or 0
-        article = Article.objects.get(slug=slugIdentifier)
-        context['comments'] = Comment.objects.filter(article = article)
+        articleIdentifier = Article.objects.get(slug=self.kwargs['slug'])
+        context['comments'] = Comment.objects.filter(article = articleIdentifier)
         return context
     
     
 class ArticleCreate(CreateView):
     model = Article
-    fields = ['title','category','slug','content','picture',]
+    fields = ['title','category','content','picture',]
     template_name = 'article_form.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(ArticleCreate, self).dispatch(*args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        return context
+    
     
     def form_valid(self,form):
         try : 
@@ -114,7 +132,7 @@ class ArticleCreate(CreateView):
     
 class ArticleDelete(DeleteView):
     model = Article
-    success_url ="/blog/"
+    success_url ="/"
     
     @method_decorator(login_required)
     @method_decorator(permission_required('blogApp.delete_article'))
@@ -126,6 +144,12 @@ class ArticleUpdateView(UpdateView):
     model = Article
     fields = ['title','category','content','picture']
     template_name_suffix = '_update_form'
+    
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        return context
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -140,6 +164,12 @@ class ArticleCommentView(CreateView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(ArticleCommentView, self).dispatch(*args, **kwargs)
+    
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        return context
     
     
     def form_valid(self,form):
@@ -158,6 +188,12 @@ class CommentDetail(generic.ListView):
     context_object_name = 'object'
     
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        return context
+    
+    
     def get_queryset(self):
         articleIdentifier = Article.objects.get(slug=self.kwargs['slug'])
         queryset = Comment.objects.filter(article = articleIdentifier)
@@ -166,10 +202,10 @@ class CommentDetail(generic.ListView):
         
 class CommentDelete(DeleteView):
     model = Comment
-    success_url ="/blog/"
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
+        self.success_url = self.request.META.get('HTTP_REFERER')
         return super(CommentDelete, self).dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
@@ -185,14 +221,19 @@ class SignUpView(generic.CreateView):
 class categoryView(generic.ListView):
     template_name = 'index.html'
     context_object_name= 'Article_list'
-    success_url ="/blog/"
+    success_url ="/"
     
     def get_queryset(self):
         Categorydentifier = Category.objects.get(id = self.kwargs['pk'])
         queryset = Article.objects.filter(status=1,category  = Categorydentifier)
         return queryset
     
-@method_decorator(login_required)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        return context
+    
+@login_required
 def PublishArticle(request, identifier):
     post = Article.objects.get(slug = identifier)
     post.status = 1

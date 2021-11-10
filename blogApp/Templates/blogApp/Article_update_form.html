@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
 {% block content %}
 
 <div class="text-center text-md-center mb-4 mt-md-0">
   <h1 class="mb-0 h3">
-    <a href="#" target="_blank">Create Article here</a>
+    <a href="#" target="_blank">Update Article here</a>
   </h1>
   <br />
   <span class="font-weight-normal">
@@ -15,17 +17,8 @@
 <form class="col-md-8 float-left" method="post" action="" enctype="multipart/form-data">
   {% csrf_token %}
   {% for field in form %}
-  <div class="card mb-4">
-    <div>
-      <label class="col-sm-2 col-form-label">{{field.label_tag}}</label>
-
-      <div class="form-control" id="">
-        {{field}}
-      </div>
-
-    </div>
-  </div>
-  {% endfor%}
+    {{field|as_crispy_field }}
+  {% endfor %}
   <button class="btn btn-primary" type="submit">post</button>
 </form>
 

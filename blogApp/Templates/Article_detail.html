@@ -79,14 +79,18 @@
 
                     <h2 class="section-heading">comments</h2>
                     <div>
-                      {% for comment in comments %}
-                      <br />
-                      <div class = "list-group-item">
-                        <p class=" text-muted">{{ comment.commenter }} | {{ comment.created_on }}</p>
-                        <p class="card-text text-center">{{ comment.content | safe }}</p>
-                        <a href="{% url 'blogApp:comment_delete' comment.id  %}" class="btn btn-secondary">delete</a>
-                      </div>
-                      {% endfor %}
+                    {% if comments %}
+                        {% for comment in comments %}
+                        <br />
+                        <div class = "list-group-item">
+                            <p class=" text-muted">{{ comment.commenter }} | {{ comment.created_on }}</p>
+                            <p class="card-text text-center">{{ comment.content | safe }}</p>
+                            <a href="{% url 'blogApp:comment_delete' comment.id  %}" class="btn btn-secondary">delete</a>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="card-text ">no comments yet</p>
+                    {% endif %}
                     </div>
                 </div>
             </div>

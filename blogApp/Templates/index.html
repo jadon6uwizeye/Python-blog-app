@@ -5,9 +5,12 @@
     <div class="row">
         <!-- Blog Entries Column -->
         <div class="col-md-8 mt-3 left">
+
             {% for post in Article_list %}
             <div class="card mb-4">
                 <div class="card-body">
+                    {% if post %}
+
                     <h2 class="card-title">{{ post.title }}</h2>
                     <p class="card-text text-muted h6">{{ post.author }} | {{ post.created_on}} </p>
                     <p class="card-text">{{post.content|slice:":200" }}</p>
@@ -15,10 +18,17 @@
                         &rarr;</a>
                     <a href="{% url 'blogApp:article_delete' post.slug  %}" class="btn btn-secondary">delete</a>
                     <a href="{% url 'blogApp:article_update' post.slug  %}" class="btn btn-secondary">update</a>
-
+                    {% if post.status == 0%}
+                    <a href="{% url 'blogApp:article_publish' post.slug  %}" class="btn btn-secondary">publish</a>
+                    {% endif %}
+                    {% else %}
+                    <h2 class="card-title">no post to display</h2>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
+
+
 
         </div>
         {%endblock%}

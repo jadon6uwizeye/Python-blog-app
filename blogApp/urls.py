@@ -8,6 +8,7 @@ app_name = 'blogApp'
 urlpatterns = [
     path('API/', include('blogApp.API.urls')),
     path('', ArticleList.as_view(), name = 'article_list'),
+    path('posts/', UnpublishedPosts.as_view(), name = 'article_unpublished'),
     path('login/', login_view, name="login"),
     path('register/', register_user, name="register"),
     path("logout/", LogoutView.as_view(), name="logout"),
