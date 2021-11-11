@@ -143,7 +143,7 @@ class ArticleDelete(DeleteView):
 class ArticleUpdateView(UpdateView):
     model = Article
     fields = ['title','category','content','picture']
-    template_name = 'blogApp/article_update_form.html'
+    template_name = 'article_update_form.html'
     
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
