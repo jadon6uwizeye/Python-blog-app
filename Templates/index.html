@@ -16,12 +16,18 @@
                     <p class="card-text">{{post.content|slice:":200" }}</p>
                     <a href="{% url 'blogApp:article_details' post.slug  %}" class="btn btn-primary">Read More
                         &rarr;</a>
-                    <a href="{% url 'blogApp:article_delete' post.slug  %}" class="btn btn-secondary">delete</a>
-                    <a href="{% url 'blogApp:article_update' post.slug  %}" class="btn btn-secondary">update</a>
-                    {% if post.status == 0%}
-                    <a href="{% url 'blogApp:article_publish' post.slug  %}" class="btn btn-secondary">publish</a>
+                    {% if request.user.is_authenticated %}
+                        {% if perms.blogApp.delete_article %}
+                            <a href="{% url 'blogApp:article_delete' post.slug  %}" class="btn btn-secondary">delete</a>
+                        {% endif %}
+                        {% if post.author == request.user %}
+                            <a href="{% url 'blogApp:article_update' post.slug  %}" class="btn btn-secondary">update</a>
+                        {% endif %}
+                        {% if post.status == 0%}
+                        <a href="{% url 'blogApp:article_publish' post.slug  %}" class="btn btn-secondary">publish</a>
+                        {% endif %}
                     {% endif %}
-                    {% else %}
+                        {% else %}
                     <h2 class="card-title">no post to display</h2>
                     {% endif %}
                 </div>

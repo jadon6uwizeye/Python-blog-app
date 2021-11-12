@@ -19,26 +19,38 @@
     <body>
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
-            <div class="container px-4 px-lg-5">
-                <a class="navbar-brand" href="{% url 'blogApp:article_list' %}">Jadon</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                    Menu
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarResponsive">
-                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'blogApp:login' %}"> log in </a></li>
-                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'blogApp:logout' %}"> log out </a></li>
-                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'blogApp:article_create' %}"> new post </a></li>
-                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'blogApp:article_unpublished' %}"> Draft posts </a></li>
-                            
-                        {% for category in categories %}
-                            <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'blogApp:category_view' category.id %}"> {{category}} </a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
+        <div class="container px-4 px-lg-5">
+            <a class="navbar-brand" href="{% url 'blogApp:article_list' %}">Jadon</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                Menu
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                    {% for category in categories %}
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4"
+                            href="{% url 'blogApp:category_view' category.id %}"> {{category}} </a></li>
+                    {% endfor %}
+                    {% if request.user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'blogApp:logout' %}"> log
+                            out </a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4"
+                            href="{% url 'blogApp:article_create' %}"> new post </a></li>
+                    {% if perms.blogApp.update_article %}
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4"
+                            href="{% url 'blogApp:article_unpublished' %}"> Draft posts </a></li>
+                    {% endif %}
+                    {% else %}
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{% url 'blogApp:login' %}"> log
+                            in </a></li>
+                    {% endif %}
+
+                </ul>
             </div>
-        </nav>
+        </div>
+    </nav>
         <!-- Page Header-->
         <header class="masthead" style="background-image: url({{object.picture.url}})">
             <div class="container position-relative px-3 px-lg-4">
@@ -56,10 +68,20 @@
                     </div>
                 </div>
                     <span class="caption text-muted">
-                        <a href="{% url 'blogApp:article_update' object.slug  %}" class="btn btn-primary">update</a>
-                        <a href="{% url 'blogApp:article_delete' object.slug  %}" class="btn btn-secondary">delete</a>
-                        <a href="{% url 'blogApp:article_comment' object.slug  %}" class="btn btn-primary">comment</a>
-                    </span>
+                        {% if request.user.is_authenticated %}
+                            {% if object.author == request.user %}
+                                <a href="{% url 'blogApp:article_update' object.slug  %}" class="btn btn-primary">update</a>
+                            {% endif %}
+                            {% if perms.blogApp.delete_article or object.author == request.user %}
+                                <a href="{% url 'blogApp:article_delete' object.slug  %}" class="btn btn-secondary">delete</a>
+                            {% endif %}
+                            {% if perms.blogApp.update_article %}
+                                <a href="{% url 'blogApp:article_publish' object.slug  %}" class="btn btn-secondary">publish</a>
+                            {% endif %}
+                            <a href="{% url 'blogApp:article_comment' object.slug  %}" class="btn btn-primary">comment</a>
+                        {% endif %}
+                            
+                        </span>
                 </div>
             </header>
         <!-- Post Content-->
@@ -75,9 +97,19 @@
                         <a href="{{object.picture.url}}"><img class="img-fluid" src="{{object.picture.url}}" alt="..." /></a>
                         <br><hr>
                         <span class="caption text-muted">
-                            <a href="{% url 'blogApp:article_update' object.slug  %}" class="btn btn-primary">update</a>
-                            <a href="{% url 'blogApp:article_delete' object.slug  %}" class="btn btn-secondary">delete</a>
+                        {% if request.user.is_authenticated %}
+                            {% if object.author == request.user %}
+                                <a href="{% url 'blogApp:article_update' object.slug  %}" class="btn btn-primary">update</a>
+                            {% endif %}
+                            {% if perms.blogApp.delete_article or object.author == request.user %}
+                                <a href="{% url 'blogApp:article_delete' object.slug  %}" class="btn btn-secondary">delete</a>
+                            {% endif %}
+                            {% if perms.blogApp.update_article %}
+                                <a href="{% url 'blogApp:article_publish' object.slug  %}" class="btn btn-secondary">publish</a>
+                            {% endif %}
                             <a href="{% url 'blogApp:article_comment' object.slug  %}" class="btn btn-primary">comment</a>
+                        {% endif %}
+                            
                         </span>
                     </div>
 
@@ -89,7 +121,9 @@
                         <div class = "list-group-item">
                             <p class=" text-muted">{{ comment.commenter }} | {{ comment.created_on }}</p>
                             <p class="card-text text-center">{{ comment.content | safe }}</p>
-                            <a href="{% url 'blogApp:comment_delete' comment.id  %}" class="btn btn-secondary">delete</a>
+                            {% if  request.user.is_authenticated and comment.commenter == request.user %}
+                                <a href="{% url 'blogApp:comment_delete' comment.id  %}" class="btn btn-secondary">delete</a>
+                            {% endif %}
                         </div>
                         {% endfor %}
                     {% else %}
