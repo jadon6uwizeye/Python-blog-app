@@ -1,4 +1,6 @@
 from ..models import *
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 # posts/views.py
 from rest_framework import generics,permissions
@@ -39,6 +41,13 @@ class ArticleCreate(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+class UnpublishedPosts(generics.ListAPIView):
+    queryset = Article.objects.filter(status=0).order_by('-created_on')
+    serializer_class = ArticleSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     
 class CommentCreateView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
@@ -48,3 +57,17 @@ class CommentCreateView(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         serializer.save(commenter=self.request.user)
+        
+        
+class CategoryView(generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    
+    
+class PublishView(APIView):
+    def patch(self, request, identifier, format=None):
+        post = Article.objects.get(slug = identifier)
+        post.status = 1
+        post.save()
+        serializer = ArticleSerializer(post)
+        return Response(serializer.data)

@@ -216,13 +216,7 @@ class CommentDelete(DeleteView):
     
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
-    
-    
-class SignUpView(generic.CreateView):
-    form_class = UserCreationForm
-    success_url ="/blog/"
-    template_name = 'registration/signup.html'
-    
+
     
 class categoryView(generic.ListView):
     template_name = 'index.html'

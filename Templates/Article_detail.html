@@ -108,7 +108,12 @@
                                 <a href="{% url 'blogApp:article_publish' object.slug  %}" class="btn btn-secondary">publish</a>
                             {% endif %}
                             <a href="{% url 'blogApp:article_comment' object.slug  %}" class="btn btn-primary">comment</a>
+                        {% else %}
+                            <p style = "color : red "> to comment you should first log in
+                            <a href="{% url 'blogApp:article_comment' object.slug  %}" class="btn btn-primary" >comment</a>
+                            </p>
                         {% endif %}
+                        
                             
                         </span>
                     </div>
