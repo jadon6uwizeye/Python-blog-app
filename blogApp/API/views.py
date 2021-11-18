@@ -40,7 +40,8 @@ class ArticleCreate(generics.ListCreateAPIView):
     
     
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        categ = Category.objects.get(id = self.request.data['category'])
+        serializer.save(category = categ, author=self.request.user)
 
 
 class UnpublishedPosts(generics.ListAPIView):

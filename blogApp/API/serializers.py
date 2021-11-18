@@ -12,18 +12,17 @@ class CategorySerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
-        fields = '__all__'
+        fields = ('username','first_name','last_name','email')
         model = User
         
 
 class ArticleSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(many = False)
-    author = UserSerializer(many = False)
+    category = CategorySerializer(many = False, read_only=True)
+    author = UserSerializer(many = False, read_only=True, default=serializers.CurrentUserDefault())
     
     class Meta:
         fields = ('id', 'title','slug','category','author', 'content','status', 'picture','created_on', 'updated_on',)
         model = Article
-        author = serializers.ReadOnlyField(source='author.username')
 
 class CommentSerializer(serializers.ModelSerializer):
     

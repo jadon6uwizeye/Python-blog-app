@@ -13,6 +13,6 @@ urlpatterns = [
     path('publish/<slug:identifier>/', PublishView.as_view()),
     path('<int:pk>/', PostDetail.as_view()),
     path('comment/', CommentList.as_view()),
-    path('comment/post', CommentCreateView.as_view()),
+    path('comment/post/', CommentCreateView.as_view()),
     path('comment/<int:pk>/', CommentDetail.as_view()),
 ]
