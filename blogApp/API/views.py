@@ -1,6 +1,11 @@
 from ..models import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from .permissions import  IsOwnerOrReadOnly
+from rest_framework.filters import (
+    SearchFilter,
+    OrderingFilter,
+)
 
 # posts/views.py
 from rest_framework import generics,permissions
@@ -12,13 +17,18 @@ class PostList(generics.ListAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [SearchFilter,OrderingFilter]
+    search_fields = [ 'id', 'slug','title','created_on']
+    ordering_fields = ['created_on', 'id']
+    ordering = ['-created_on']
 
 
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'slug'
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
     
     
 class CommentList(generics.ListAPIView):
