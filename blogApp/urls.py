@@ -6,7 +6,7 @@ from .views import *
 app_name = 'blogApp'
 
 urlpatterns = [
-    path('API/', include('blogApp.API.urls')),
+    path('API/V1', include('blogApp.API.urls')),
     path('', ArticleList.as_view(), name = 'article_list'),
     path('posts/', UnpublishedPosts.as_view(), name = 'article_unpublished'),
     path('login/', login_view, name="login"),
