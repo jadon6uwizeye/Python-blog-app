@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    container_name: python_blog
+    command: python manage.py runserver 0.0.0.0:8001
+    ports:
+      - "8001:8001"
